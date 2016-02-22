@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+
+        <link rel="stylesheet" type="text/css" href="jqmobile/jquery.mobile.css" />
+        <script type="text/javascript" src="jqmobile/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="jqmobile/jquery.mobile.min.js"></script>
+        
+
+        <link rel="stylesheet" href="owl-carousel/owl.carousel.css">
+        <link rel="stylesheet" href="owl-carousel/owl.theme.css">
+        <script src="owl-carousel/owl.carousel.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="css/global.css" />
+        <title>Combat</title>
+        
+    </head>
+    <body>
+    
+    	<div data-role="page">
+        
+    		<div data-id="header1" id="header1" data-role="header" data-position="fixed">
+                <div id="logo"></div>
+                <a id="menu-btn" href="#menu1"class="ui-btn-right" data-role="none" data-ajax="false"></a>
+            </div>
+
+            <div class="content" data-role="content" id="inicio">
+            
+                <div id="owl-inicio" class="owl-carousel">
+                    <div class="item"><img src="img/inicio/01 Fierita Catalano.png" /></div>
+                    <div class="item"><img src="img/inicio/02 Thiago Batistuta.png" /></div>
+                    <div class="item"><img src="img/inicio/03 Eugenia Lemos.png" /></div>
+                    <div class="item"><img src="img/inicio/04 Leandro Penna.png" /></div>
+                    <div class="item"><img src="img/inicio/05 Turca Duer.png" /></div>
+                    <div class="item"><img src="img/inicio/06 Tito Speranza.png" /></div>
+                </div>
+                
+                <div id="titInicio" class="titulo"></div>
+
+                <div id="postInicio">
+                </div>
+
+            </div>
+    
+    		<div data-id="footer1" id="footer1" data-role="footer" data-position="fixed">
+            	<a id="triangulitos" href="" class="ui-btn-left" data-role="none"></a>
+                <a id="canal9" href=""class="ui-btn-right" data-role="none"></a>
+            </div>
+        
+        	<div data-role="panel" data-position="right" data-display="push" id="menu1">
+            	<div id="titMenu" data-position="fixed"></div>
+            
+               <div id="menuCont">
+                    <a href="index.html" title="Inicio" class="btn-inicio" data-ajax="false">Inicio</a>
+                    <br />
+                    <a href="programa.html" title="Programa" class="btn-programa" data-ajax="false">Programa</a>
+                    <a href="videos.html" title="Videos" class="btn-videos" data-ajax="false">Videos</a>
+                    <a href="des_tw.html" title="Destacados Twitter" class="btn-tw" data-ajax="false">Canal TW</a>
+                    <br />
+                    <a href="des_fb.html" title="Destacados Facebook" class="btn-fb" data-ajax="false">Canal FB</a>
+                    <a href="votaciones.html" title="Votaciones" class="btn-votaciones" data-ajax="false">Votaciones</a>
+                    <a href="acerca_de.html" title="Acerca de" class="btn-acerca" data-ajax="false">Acerca de</a>
+                </div> 
+        	</div>
+        
+    	</div>     
+		<script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="cordova_plugins.js"></script>
+        <script type="text/javascript" src="PushNotification.js"></script>
+        
+        <script type="text/javascript">
+		
+		var pushNotification;
+		
+		document.addEventListener("deviceReady", deviceReady, false);
+            
+            function deviceReady() {
+				
+				$("#owl-inicio").owlCarousel({
+					autoPlay: 2000,
+					navigation : false,
+					slideSpeed : 300,
+					paginationSpeed : 400,
+					singleItem:true,
+					pagination: false
+				});
+				
+                traerInicio()
+            }
+        
+			function traerInicio() {
+				//LISTADO DE POST INICIO
+				var post_data= {user_id: '23', access_token: 'b86f6d689f3c7b0f4a9a6ce425141324'};
+				$.ajax({
+				   url			: 'http://54.186.84.166/ajax/getInicioJson',
+				   type			: 'POST',
+				   crossDomain	: true,
+				   beforeSend 	: function() {$.mobile.loading('show')},
+				   complete   	: function() {$.mobile.loading('hide')},
+				   data			: post_data,
+				   dataType		: 'json',
+				   error		: function(jqXHR,text_status,strError){alert("Problemas al conectar, vuelva a intentarlo");},
+				   timeout		: 60000,
+				   success		: function(data){
+					   $.each(data, function(key,val){
+						   
+						   var str = val.content;
+						   var regex = /(https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\/_\.]*(\?\S+)?)?)?)/ig
+						   var replaced_text = str.replace(regex, "<a href='#' onclick=\"window.open('$1', '_blank','location=yes','closebuttoncaption=Return');\">$1</a>");
+						   var user = /@(([\w\/_\.]*(\?\S+)?)?)/ig
+						   replaced_text = replaced_text.replace(user, "<a href='#' class='usrTuiter' onclick='window.plugins.socialsharing.shareViaTwitter(\"@$1 \")'>@$1</a>");
+						   
+						   if (val.type == "twitter") {
+							   
+							   var logo = $('<div></div>').addClass('twitter');
+							   
+							   var imagen = $('<img />').attr('src', val.avatar);
+							   
+							   var parrafo = $('<p></p>')
+							    .addClass('entrada')
+							    .append(imagen)
+								.append(logo)
+								.append($('<span></span>').addClass('nombreUsr').text('@'+val.screenname))
+								.append(replaced_text)
+								
+								$('#postInicio').append(parrafo);
+								
+								//console.log(val.id_twitter);
+	
+						   } else {
+							   var logo = $('<div></div>').addClass('facebook');
+							   
+							   var parrafo = $('<p></p>')
+							    .addClass('entrada')
+								.append(logo)
+							   	.append(replaced_text)
+								//.append("fecha: "+val.fecha+'<br />')
+								//.append("streamid: "+val.streamid)
+								$('#postInicio').append(parrafo);
+						   }
+					   });
+				
+				   }
+				});
+				
+				
+				
+				
+				///PUSH
+                
+				document.addEventListener("backbutton", function(e)
+				{
+  					
+      				if( $("#inicio").length > 0)
+					{
+						// call this to get a new token each time. don't call it to reuse existing token.
+						//pushNotification.unregister(successHandler, errorHandler);
+						e.preventDefault();
+						navigator.app.exitApp();
+					}
+					else
+					{
+						navigator.app.backHistory();
+					}
+				}, false);
+
+				try 
+				{ 
+                	pushNotification = window.plugins.pushNotification;
+                	if (device.platform == 'android' || device.platform == 'Android') {
+                    	pushNotification.register(successHandler, errorHandler, {"senderID":"661780372179","ecb":"onNotificationGCM"});		// required!
+					} else {
+                    	pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});	// required!
+                	}
+                }
+				catch(err) 
+				{ 
+					txt="There was an error on this page.\n\n"; 
+					txt+="Error description: " + err.message + "\n\n"; 
+					alert(txt); 
+				} 
+			}
+	
+            // handle APNS notifications for iOS
+            function onNotificationAPN(e) {
+                if (e.alert) {
+                     navigator.notification.alert(e.alert);
+                }
+                    
+                if (e.sound) {
+                    var snd = new Media(e.sound);
+                    snd.play();
+                }
+                
+                if (e.badge) {
+                    pushNotification.setApplicationIconBadgeNumber(successHandler, e.badge);
+                }
+            }
+            
+            // handle GCM notifications for Android
+            function onNotificationGCM(e) {
+                
+                switch( e.event )
+                {
+                    case 'registered':
+					if ( e.regid.length > 0 )
+					{
+						// Your GCM push server needs to know the regID before it can push to this device
+						// here is where you might want to send it the regID for later use.
+						console.log("regID = " + e.regid);
+					}
+                    break;
+                    
+                    case 'message':
+                    	// if this flag is set, this notification happened while we were in the foreground.
+                    	// you might want to play a sound to get the user's attention, throw up a dialog, etc.
+                    	if (e.foreground)
+                    	{
+
+							// if the notification contains a soundname, play it.
+							var my_media = new Media("/android_asset/www/"+e.soundname);
+							my_media.play();
+						}
+						else
+						{	// otherwise we were launched because the user touched a notification in the notification tray.
+							//if (e.coldstart)
+							//else
+						}
+                    break;
+                    
+                    case 'error':
+                    break;
+                    
+                    default:
+                    break;
+                }
+            }
+            
+            function tokenHandler (result) {
+                // Your iOS push server needs to know the token before it can push to this device
+                // here is where you might want to send it the token for later use.
+            }
+
+            function successHandler (result) {
+            }
+            
+            function errorHandler (error) {
+            }
+	
+           
+        </script>
+    </body>
+</html>

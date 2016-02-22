@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+        
+        <link rel="stylesheet" type="text/css" href="jqmobile/jquery.mobile.css" />
+        <script type="text/javascript" src="jqmobile/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="jqmobile/jquery.mobile.min.js"></script>
+        
+        
+        <link rel="stylesheet" href="owl-carousel/owl.carousel.css">
+            <link rel="stylesheet" href="owl-carousel/owl.theme.css">
+                <script src="owl-carousel/owl.carousel.js"></script>
+                
+                <link rel="stylesheet" type="text/css" href="css/global.css" />
+                <title>Combate</title>
+                
+                </head>
+    <body>
+        
+    	<div data-role="page">
+            
+    		<div data-id="header1" id="header1" data-role="header" data-position="fixed">
+                <div id="logo"></div>
+                <a id="menu-btn" href="#menu1"class="ui-btn-right" data-role="none" data-ajax="false"></a>
+            </div>
+            
+            <div class="content" data-role="content" id="inicio">
+                
+                <div id="owl-inicio" class="owl-carousel">
+                    <div class="item"><img src="img/inicio/01 Fierita Catalano.png" /></div>
+                    <div class="item"><img src="img/inicio/02 Thiago Batistuta.png" /></div>
+                    <div class="item"><img src="img/inicio/03 Eugenia Lemos.png" /></div>
+                    <div class="item"><img src="img/inicio/04 Leandro Penna.png" /></div>
+                    <div class="item"><img src="img/inicio/05 Turca Duer.png" /></div>
+                    <div class="item"><img src="img/inicio/06 Tito Speranza.png" /></div>
+                </div>
+                
+                <div id="titInicio" class="titulo"></div>
+                
+                <div id="postInicio">
+                </div>
+                
+            </div>
+            
+    		<div data-id="footer1" id="footer1" data-role="footer" data-position="fixed">
+            	<a id="triangulitos" href="" class="ui-btn-left" data-role="none"></a>
+                <a id="canal9" href=""class="ui-btn-right" data-role="none"></a>
+            </div>
+            
+        	<div data-role="panel" data-position="right" data-display="push" id="menu1">
+            	<div id="titMenu" data-position="fixed"></div>
+                
+                <div id="menuCont">
+                    <a href="index.html" title="Inicio" class="btn-inicio" data-ajax="false">Inicio</a>
+                    <br />
+                    <a href="programa.html" title="Programa" class="btn-programa" data-ajax="false">Programa</a>
+                    <a href="videosDemo.html" title="Videos" class="btn-videos" data-ajax="false">Videos</a>
+                    <a href="des_twDemo.html" title="Destacados Twitter" class="btn-tw" data-ajax="false">Canal TW</a>
+                    <br /> <a href="des_fbDemo.html" title="Destacados Facebook" class="btn-fb" data-ajax="false">Canal FB</a>
+                    <a href="votacionesDemo.html" title="Votaciones" class="btn-votaciones" data-ajax="false">Votaciones</a>
+                    <a href="acerca_de.html" title="Acerca de" class="btn-acerca" data-ajax="false">Acerca de</a>
+                </div>
+        	</div>
+            
+    	</div>
+		<script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="cordova_plugins.js"></script>
+        <script type="text/javascript" src="PushNotification.js"></script>
+        <script type="text/javascript" src="SocialSharing.js"></script>
+        
+        <script type="text/javascript">
+            
+            //PUSH
+            var pushNotification;
+            
+            function onDeviceReady() {
+            	//$("#app-status-ul").append('<li>deviceready event received</li>');
+                
+				document.addEventListener("backbutton", function(e)
+                                          {
+                                          //$("#app-status-ul").append('<li>backbutton event received</li>');
+                                          
+                                          if( $("#inicio").length > 0)
+                                          {
+                                          // call this to get a new token each time. don't call it to reuse existing token.
+                                          //pushNotification.unregister(successHandler, errorHandler);
+                                          e.preventDefault();
+                                          navigator.app.exitApp();
+                                          }
+                                          else
+                                          {
+                                          navigator.app.backHistory();
+                                          }
+                                          }, false);
+                                          
+                                          try
+                                          {
+                                              pushNotification = window.plugins.pushNotification;
+                                              //$("#app-status-ul").append('<li>registering ' + device.platform + '</li>');
+                                              if (device.platform == 'android' || device.platform == 'Android' ||
+                                                  device.platform == 'amazon-fireos' ) {
+                                                  pushNotification.register(successHandler, errorHandler, {"senderID":"814636540667","ecb":"onNotification"});		// required!
+                                              } else {
+                                                  pushNotification.register(tokenHandler, errorHandler, {"badge":"true","sound":"true","alert":"true","ecb":"onNotificationAPN"});	// required!
+                                              }
+                                          }
+                                          catch(err)
+                                          {
+                                              txt="There was an error on this page.\n\n";
+                                              txt+="Error description: " + err.message + "\n\n";
+                                              alert(txt);
+                                          }
+                                          
+                                          //COMBATE
+                                          checkConnection()
+            }
+        
+        // handle APNS notifications for iOS
+        function onNotificationAPN(e) {
+            if (e.alert) {
+                //$("#app-status-ul").append('<li>push-notification: ' + e.alert + '</li>');
+                //navigator.notification.alert(e.alert);
+                navigator.notification.alert(e.alert, null, 'Combate', 'Aceptar')
+            }
+            
+            if (e.sound) {
+                var snd = new Media(e.sound);
+                snd.play();
+            }
+            
+            if (e.badge) {
+                pushNotification.setApplicationIconBadgeNumber(successHandler, e.badge);
+            }
+        }
+        
+        // handle GCM notifications for Android
+        function onNotification(e) {
+            //$("#app-status-ul").append('<li>EVENT -> RECEIVED:' + e.event + '</li>');
+            
+            switch( e.event )
+            {
+                case 'registered':
+                if ( e.regid.length > 0 )
+                {
+                    //$("#app-status-ul").append('<li>REGISTERED -> REGID:' + e.regid + "</li>");
+                    // Your GCM push server needs to know the regID before it can push to this device
+                    // here is where you might want to send it the regID for later use.
+                    console.log("regID = " + e.regid);
+                }
+                break;
+                
+                case 'message':
+                // if this flag is set, this notification happened while we were in the foreground.
+                // you might want to play a sound to get the user's attention, throw up a dialog, etc.
+                if (e.foreground)
+                {
+                    //$("#app-status-ul").append('<li>--INLINE NOTIFICATION--' + '</li>');
+                    
+                    // on Android soundname is outside the payload.
+                    // On Amazon FireOS all custom attributes are contained within payload
+                    var soundfile = e.soundname || e.payload.sound;
+                    // if the notification contains a soundname, play it.
+                    var my_media = new Media("/android_asset/www/"+ soundfile);
+                    
+                    my_media.play();
+                }
+                else
+                {	// otherwise we were launched because the user touched a notification in the notification tray.
+                    //if (e.coldstart)
+                    //$("#app-status-ul").append('<li>--COLDSTART NOTIFICATION--' + '</li>');
+                    //else
+                    //$("#app-status-ul").append('<li>--BACKGROUND NOTIFICATION--' + '</li>');
+                }
+                
+                //$("#app-status-ul").append('<li>MESSAGE -> MSG: ' + e.payload.message + '</li>');
+                //android only
+                //$("#app-status-ul").append('<li>MESSAGE -> MSGCNT: ' + e.payload.msgcnt + '</li>');
+                //amazon-fireos only
+                //$("#app-status-ul").append('<li>MESSAGE -> TIMESTAMP: ' + e.payload.timeStamp + '</li>');
+                break;
+                
+                case 'error':
+                //$("#app-status-ul").append('<li>ERROR -> MSG:' + e.msg + '</li>');
+                break;
+                
+                default:
+                //$("#app-status-ul").append('<li>EVENT -> Unknown, an event was received and we do not know what it is</li>');
+                break;
+            }
+        }
+        
+        function tokenHandler (result) {
+            //$("#app-status-ul").append('<li>token: '+ result +'</li>');
+            // Your iOS push server needs to know the token before it can push to this device
+            // here is where you might want to send it the token for later use.
+        }
+        
+        function successHandler (result) {
+            //$("#app-status-ul").append('<li>success:'+ result +'</li>');
+        }
+        
+        function errorHandler (error) {
+            //$("#app-status-ul").append('<li>error:'+ error +'</li>');
+        }
+        
+        document.addEventListener('deviceready', onDeviceReady, true);
+		
+		//DEMO
+		traerFotos2()
+        traerInicio2()
+        
+        function checkConnection() {
+            var networkState = navigator.network.connection.type;
+            
+            if (networkState != Connection.NONE) {
+				//DEMO
+               // $('#owl-inicio').empty();
+                //traerFotos()
+                //traerInicio()
+            } else {
+                navigator.notification.alert(
+                                             'Sin conexión a internet',
+                                             null,
+                                             'Error de Conexión',
+                                             'Aceptar'
+                                             );
+                                             
+                                             $("#owl-inicio").owlCarousel({
+                                                                          autoPlay: 2000,
+                                                                          navigation : false,
+                                                                          slideSpeed : 300,
+                                                                          paginationSpeed : 400,
+                                                                          singleItem:true,
+                                                                          pagination: false
+                                                                          });
+            }
+        }
+        
+		//DEMO
+        function traerFotos2(){
+            
+                   
+                   $("#owl-inicio").owlCarousel({
+                                                autoPlay: 2000,
+                                                navigation : false,
+                                                slideSpeed : 300,
+                                                paginationSpeed : 400,
+                                                singleItem:true,
+                                                pagination: false
+                                                });
+        }
+        
+        function traerInicio2() {
+
+                          var parrafo = $('<p></p>')
+                          .addClass('entrada')
+                          .append($('<img />').attr('src', 'img/demo/combateW.png'))
+                          .append($('<div></div>').addClass('twitter'))
+                          .append($('<span></span>').addClass('nombreUsr').text('@combatearg'))
+                          .append("<a href='#' >Hoy dia de votaciones!</a>")
+                          
+                          $('#postInicio').append(parrafo);
+                          
+                    var parrafo3 = $('<p></p>')
+                          .addClass('entrada')
+                          .append($('<img />').attr('src', 'img/fb/avatar@2x.png'))
+                          .append($('<div></div>').addClass('facebook'))
+                          .append($('<span></span>').addClass('nombreUsr').text('Combate Oficial:'))
+                          .append("<a href='#' >Prepararse para una nueva votación!!!</a>")
+						  
+                          $('#postInicio').append(parrafo3);
+                          
+                          var parrafo2 = $('<p></p>')
+                          .addClass('entrada')
+                          .append($('<img />').attr('src', 'img/fb/avatarFB@2x.png'))
+                          .append($('<div></div>').addClass('facebook'))
+                          .append($('<span></span>').addClass('nombreUsr').text('Persona:'))
+                          .append("<a href='#' >Vamos equipo Rojo</a>")
+						  
+                          $('#postInicio').append(parrafo2);
+ 
+                   
+        }
+	
+	function traerFotos(){
+            
+            var post_data = {token: '18bbe012cd0fb09010b610205a14b7ac'};
+            $.ajax({
+				   url			: 'http://54.186.84.166:8080/basic/web/index.php?r=carrusel/images',
+				   type			: 'POST',
+				   crossDomain	: true,
+				   beforeSend 	: function() {$.mobile.loading('show')},
+				   complete   	: function() {$.mobile.loading('hide')},
+				   data			: post_data,
+				   dataType		: 'json',
+				   error		: function(jqXHR,text_status,strError){navigator.notification.alert('Problemas al conectar, vuelva a intentarlo', null, 'Error de Conexión', 'Aceptar');},
+				   timeout		: 60000,
+				   success		: function(data){
+                   $.each(data, function(key,val){
+                          var img = $('<img />').attr('src',val.image_url);
+                          var div = $('<div></div>').addClass('item').html(img);
+                          
+                          $('#owl-inicio').prepend(div);
+                          });
+                   
+                   $("#owl-inicio").owlCarousel({
+                                                autoPlay: 2000,
+                                                navigation : false,
+                                                slideSpeed : 300,
+                                                paginationSpeed : 400,
+                                                singleItem:true,
+                                                pagination: false
+                                                });
+				   }
+                   });
+        }
+        
+        function traerInicio() {
+            //LISTADO DE POST INICIO
+            var post_data= {user_id: '23', access_token: 'b86f6d689f3c7b0f4a9a6ce425141324'};
+            $.ajax({
+				   url			: 'http://54.186.84.166/ajax/getInicioJson',
+				   type			: 'POST',
+				   crossDomain	: true,
+				   beforeSend 	: function() {$.mobile.loading('show')},
+				   complete   	: function() {$.mobile.loading('hide')},
+				   data			: post_data,
+				   dataType		: 'json',
+				   error		: function(jqXHR,text_status,strError){navigator.notification.alert('Problemas al conectar, vuelva a intentarlo', null, 'Error de Conexión', 'Aceptar');},
+				   timeout		: 60000,
+				   success		: function(data){
+                   $.each(data, function(key,val){
+                          
+                          var str = val.content;
+                          var regex = /(https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\/_\.]*(\?\S+)?)?)?)/ig
+                          var replaced_text = str.replace(regex, "<a href='#' onclick=\"window.open('$1', '_blank','location=yes','closebuttoncaption=Return');\">$1</a>");
+                          
+                          if (val.type == "twitter") {
+                          
+                          var user = /@(([\w\/_\.]*(\?\S+)?)?)/ig
+                          replaced_text = replaced_text.replace(user, "<a href='#' class='usrTuiter' onclick='window.plugins.socialsharing.shareViaTwitter(\"@$1 \")'>@$1</a>");
+                          
+                          var logo = $('<div></div>').addClass('twitter');
+                          
+                          var imagen = $('<img />').attr('src', val.avatar);
+                          
+                          var parrafo = $('<p></p>')
+                          .addClass('entrada')
+                          .append(imagen)
+                          .append(logo)
+                          .append($('<span></span>').addClass('nombreUsr').text('@'+val.screenname))
+                          .append(replaced_text)
+                          
+                          $('#postInicio').append(parrafo);
+                          
+                          //console.log(val.id_twitter);
+                          
+                          } else {
+                          //hash_ID COMBATE
+                          //f43299a4df57e42b1e3389748b2141a2
+                          
+                          if (window.devicePixelRatio == 1.5) {
+                          var consin = '';
+                          } else {
+                          var consin = '@2x';
+                          }
+                          
+                          if(val.hash_id == 'f43299a4df57e42b1e3389748b2141a2') {
+                          var imagen = $('<img />').attr('src', 'img/fb/avatar'+consin+'.png');
+                          var nombre = 'Combate Oficial: '
+                          } else {
+                          var imagen = $('<img />').attr('src', 'img/fb/avatarFB'+consin+'.png');
+                          var nombre = 'Persona: '
+                          }
+                          
+                          
+                          
+                          var logo = $('<div></div>').addClass('facebook');
+                          
+                          var parrafo = $('<p></p>')
+                          .addClass('entrada')
+                          .append(imagen)
+                          .append(logo)
+                          .append($('<span></span>').addClass('nombreUsr').text(nombre))
+                          .append(replaced_text)
+                          //.append("fecha: "+val.fecha+'<br />')
+                          //.append("streamid: "+val.streamid)
+                          $('#postInicio').append(parrafo);
+                          }
+                          });
+                   
+				   }
+                   });
+                   
+        }	
+		
+        
+        
+            </script>
+    </body>
+</html>

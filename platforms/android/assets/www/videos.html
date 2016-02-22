@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+        
+        <link rel="stylesheet" type="text/css" href="jqmobile/jquery.mobile.css" />
+        <script type="text/javascript" src="jqmobile/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="jqmobile/jquery.mobile.min.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="css/global.css" />
+        <title>Combat</title>
+        
+    </head>
+    <body>
+    
+    	<div data-role="page">
+        
+    		<div data-id="header1" id="header1" data-role="header" data-position="fixed">
+                <div id="logo"></div>
+                <a id="menu-btn" href="#menu1"class="ui-btn-right" data-role="none" data-ajax="false"></a>
+            </div>
+
+            <div class="content" data-role="content" id="listaVideos">
+                <div id="videos" class="titulo"></div>
+              
+       		</div>
+    
+    		<div data-id="footer1" id="footer1" data-role="footer" data-position="fixed">
+            	<a id="triangulitos" href="" class="ui-btn-left" data-role="none"></a>
+                <a id="canal9" href=""class="ui-btn-right" data-role="none"></a>
+            </div>
+        
+        	<div data-role="panel" data-position="right" data-display="push" id="menu1">
+            	<div id="titMenu" data-position="fixed"></div>
+            
+                <div id="menuCont">
+                    <a href="index.html" title="Inicio" class="btn-inicio" data-ajax="false">Inicio</a>
+                    <br />
+                    <a href="programa.html" title="Programa" class="btn-programa" data-ajax="false">Programa</a>
+                    <a href="videos.html" title="Videos" class="btn-videos" data-ajax="false">Videos</a>
+                    <a href="des_tw.html" title="Destacados Twitter" class="btn-tw" data-ajax="false">Canal TW</a>
+                    <br />
+                    <a href="des_fb.html" title="Destacados Facebook" class="btn-fb" data-ajax="false">Canal FB</a>
+                    <a href="votaciones.html" title="Votaciones" class="btn-votaciones" data-ajax="false">Votaciones</a>
+                    <a href="acerca_de.html" title="Acerca de" class="btn-acerca" data-ajax="false">Acerca de</a>
+                </div> 
+        	</div>
+        
+    	</div>       
+        
+		<script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript">
+			document.addEventListener("deviceReady", deviceReady, false);
+            
+            function deviceReady() {
+                traerListadoVideos()
+            }
+        
+        function traerListadoVideos() {
+			//LISTADO DE VIDEOS
+			var maxVideos = '9';
+        	$.ajax({
+               url			: 'https://gdata.youtube.com/feeds/api/users/combateargentina/uploads?&max-results='+maxVideos+'&alt=json',
+               type			: 'GET',
+               crossDomain	: true,
+               beforeSend 	: function() {$.mobile.loading('show')},
+               complete   	: function() {$.mobile.loading('hide')},
+               dataType		: 'json',
+               error		: function(jqXHR,text_status,strError){alert("Problemas al conectar, vuelva a intentarlo");},
+               timeout		: 60000,
+               success		: function(data){
+				   $.each(data.feed.entry, function(key,val) {
+					   	var idVideo = val.id.$t
+						idVideo = idVideo.split("/");
+						
+						var time = val.media$group.yt$duration.seconds;
+						var minutes = Math.floor(time / 60);
+						var seconds = time - minutes * 60;
+						
+						var tiempo = $('<div></div>').addClass('tiempo').text(minutes+':'+seconds);
+						var titulo = $('<div></div>').addClass('titulo').text(val.media$group.media$title.$t);
+						   
+					   if (key == 0) {
+						   
+						   var iframe = $('<iframe></iframe>').attr('width','280').attr('height','210').attr('frameborder','0').attr('allowfullscreen','true').attr('src','https://www.youtube.com/embed/'+idVideo[idVideo.length - 1]+'?controls=0&showinfo=0');
+						   
+						   var destacado = $('<div></div>').attr('id','videoDestacado').html(iframe);
+						   
+						  $('#listaVideos').append(destacado);
+						  $('#videoDestacado').append(tiempo);
+						  $('#videoDestacado').append(titulo);
+						  
+					   } else {
+						   var iframe = $('<iframe></iframe>').attr('width','130').attr('height','98').attr('frameborder','0').attr('allowfullscreen','true').attr('src','https://www.youtube.com/embed/'+idVideo[idVideo.length - 1]+'?controls=0&showinfo=0');
+						   
+						   var normal = $('<div></div>').attr('class','videoListado').html(iframe);
+						   
+						   $('#listaVideos').append(normal);
+						   $('#listaVideos .videoListado:last-child').append(tiempo);
+						   $('#listaVideos .videoListado:last-child').append(titulo);
+					   }
+				   });
+		    
+               }
+         	});
+        }
+
+            </script>
+
+    </body>
+</html>

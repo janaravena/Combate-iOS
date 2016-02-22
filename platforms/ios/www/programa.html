@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+        
+        <link rel="stylesheet" type="text/css" href="jqmobile/jquery.mobile.css" />
+        <script type="text/javascript" src="jqmobile/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="jqmobile/jquery.mobile.min.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="css/global.css" />
+        <title>Combate</title>
+        
+    </head>
+    <body>
+    
+    	<div data-role="page">
+        
+    		<div data-id="header1" id="header1" data-role="header" data-position="fixed">
+                <div id="logo"></div>
+                <a id="menu-btn" href="#menu1"class="ui-btn-right" data-role="none" data-ajax="false"></a>
+            </div>
+
+            <div class="content" data-role="content">
+                <div id="programa" class="titulo"></div>
+                <p class="centrado">
+                	<a href="parPresYcron.html" class="btn-equipo" id="presYcron"></a>
+                </p>
+    			<p id="distancia"></p>
+                <p class="centrado">
+                	<a href="parVerde.html" class="btn-equipo" id="eqVerde" data-ajax="false"></a>
+                	<a href="parRojo.html" class="btn-equipo" id="eqRojo" data-ajax="false"></a>
+            	</p>
+       		</div>
+    
+    		<div data-id="footer1" id="footer1" data-role="footer" data-position="fixed">
+            	<a id="triangulitos" href="" class="ui-btn-left" data-role="none"></a>
+                <a id="canal9" href=""class="ui-btn-right" data-role="none"></a>
+            </div>
+        
+        	<div data-role="panel" data-position="right" data-display="push" id="menu1">
+            	<div id="titMenu" data-position="fixed"></div>
+            
+                <div id="menuCont">
+                    <a href="index.html" title="Inicio" class="btn-inicio" data-ajax="false">Inicio</a>
+                    <br />
+                    <a href="programa.html" title="Programa" class="btn-programa" data-ajax="false">Programa</a>
+                    <a href="videosDemo.html" title="Videos" class="btn-videos" data-ajax="false">Videos</a>
+                    <a href="des_twDemo.html" title="Destacados Twitter" class="btn-tw" data-ajax="false">Canal TW</a>
+                    <br /> <a href="des_fbDemo.html" title="Destacados Facebook" class="btn-fb" data-ajax="false">Canal FB</a>
+                    <a href="votacionesDemo.html" title="Votaciones" class="btn-votaciones" data-ajax="false">Votaciones</a>
+                    <a href="acerca_de.html" title="Acerca de" class="btn-acerca" data-ajax="false">Acerca de</a>
+                </div>  
+        	</div>
+        
+    	</div>       
+        
+		<script type="text/javascript" src="cordova.js"></script>
+
+    </body>
+</html>

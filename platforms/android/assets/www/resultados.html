@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+        
+        <link rel="stylesheet" type="text/css" href="jqmobile/jquery.mobile.css" />
+        <script type="text/javascript" src="jqmobile/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="jqmobile/jquery.mobile.min.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="css/global.css" />
+        <title>Combat</title>
+        
+    </head>
+    <body>
+        
+    	<div data-role="page">
+            
+    		<div data-id="header1" id="header1" data-role="header" data-position="fixed">
+                <h1 id="logo"></h1>
+                <a id="menu-btn" href="#menu1"class="ui-btn-right" data-role="none" data-ajax="false"></a>
+            </div>
+            
+            <div class="content" data-role="content">
+                <h3 id="preguntaAct">&nbsp;</h3>
+                <h4 id="ResultadoTxt">Resultados</h4>
+                
+                <div id="opcionIzq">
+                	<p>Opción A</p>
+                    <p id="opcion1Act">&nbsp;
+                    	<br />&nbsp;
+                    </p>
+                    <div class="copa" id="copa1"></div>
+                </div>
+                
+                <div id="opcionDer">
+                	<p>Opción B</p>
+                    <p id="opcion2Act">&nbsp;
+                    	<br />&nbsp;
+                    </p>
+                    <div class="copa" id="copa2"></div>
+                </div>
+            
+            </div>
+            
+    		<div data-id="footer1" id="footer1" data-role="footer" data-position="fixed">
+                <div id="footer2">
+                    <a href="votaciones.html" title="Votaciones" class="btn-vota" data-ajax="false">Votaciones</a>
+                    <a href="" title="Resultados" class="btn-resultadosH btn-hover" id="btn-resultados" data-ajax="false">Resultados</a>
+                    <a href="historial.html" title="Historial" class="btn-historial" data-ajax="false">Historial</a>
+                </div>
+                
+            	<a id="triangulitos" href="" class="ui-btn-left" data-role="none"></a>
+                <a id="canal9" href=""class="ui-btn-right" data-role="none"></a>
+            </div>
+            
+            <div data-role="panel" data-position="right" data-display="push" id="menu1">
+                <div id="headerM" data-position="fixed"></div>
+                
+                <div id="titMenu" data-position="fixed"></div>
+                
+                <div id="menuCont">
+                    <a href="index.html" title="Inicio" class="btn-inicio" data-ajax="false">Inicio</a>
+                    <br />
+                    <a href="programa.html" title="Programa" class="btn-programa" data-ajax="false">Programa</a>
+                    <a href="videos.html" title="Videos" class="btn-videos" data-ajax="false">Videos</a>
+                    <a href="des_tw.html" title="Destacados Twitter" class="btn-tw" data-ajax="false">Canal TW</a>
+                    <br />
+                    <a href="des_fb.html" title="Destacados Facebook" class="btn-fb" data-ajax="false">Canal FB</a>
+                    <a href="votaciones.html" title="Votaciones" class="btn-votaciones" data-ajax="false">Votaciones</a>
+                    <a href="acerca_de.html" title="Acerca de" class="btn-acerca" data-ajax="false">Acerca de</a>
+                </div>
+                
+                <div id="footerM" data-position="fixed"></div>
+            </div>
+            
+        </div>
+        
+        
+		<script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript">
+			document.addEventListener("deviceReady", deviceReady, false);
+            
+            function deviceReady() {
+                traerEncuesta();
+            }
+        
+        	function traerEncuesta() {
+	            //DETALLE ENCUESTA
+				var idp = window.location.search;
+				idp = idp.replace("?id=","");
+				$('#btn-resultados').attr('href','resultados.html?id='+idp);
+				
+        	    var post_data= {user_id: '23', access_token: 'b86f6d689f3c7b0f4a9a6ce425141324'};
+				var urlEnc = 'http://54.186.84.166/ajax/getEncuestaJson/'+idp;
+            	$.ajax({
+                   url			: urlEnc,
+                   type			: 'POST',
+                   crossDomain	: true,
+                   beforeSend 	: function() {$.mobile.loading('show')},
+                   complete   	: function() {$.mobile.loading('hide')},
+                   data			: post_data,
+                   dataType		: 'json',
+                   error		: function(jqXHR,text_status,strError){alert("Problemas al conectar, vuelva a intentarlo");},
+                   timeout		: 60000,
+                   success		: function(data){
+					   
+					   var total = data[0].n + data[1].n;
+					   var op1 = data[0].n*100/total;
+					   var op2 = data[1].n*100/total;
+					   
+					   if (op1 > op2) {
+						   $('#copa1').show();
+					   } else {
+						   $('#copa2').show();
+					   }
+					   
+					   $('#opcion1Act').html(data[0].name+'<br />'+ op1.toFixed(0) +'%');
+					   $('#opcion2Act').html(data[1].name+'<br />'+ op2.toFixed(0) +'%');
+					   
+                       $('#preguntaAct').text(data[0].p);
+                   }
+				});
+        	}
+
+            </script>
+    </body>
+</html>
